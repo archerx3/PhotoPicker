@@ -598,17 +598,12 @@ extension AWPhotosPickerViewController {
         guard self.configure.autoPlay else { return }
         guard self.playRequestID == nil else { return }
         let visibleIndexPaths = self.collectionView.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row })
-        #if swift(>=4.1)
+        
         let boundAssets = visibleIndexPaths.compactMap{ indexPath -> (IndexPath,AWPHAsset)? in
             guard let asset = self.focusedCollection?.getAWAsset(at: indexPath), asset.phAsset?.mediaType == .video else { return nil }
             return (indexPath,asset)
         }
-        #else
-        let boundAssets = visibleIndexPaths.flatMap{ indexPath -> (IndexPath,AWPHAsset)? in
-            guard let asset = self.focusedCollection?.getAWAsset(at: indexPath.row),asset.phAsset?.mediaType == .video else { return nil }
-            return (indexPath,asset)
-        }
-        #endif
+        
         if let firstSelectedVideoAsset = (boundAssets.filter{ getSelectedAssets($0.1) != nil }.first) {
             play(asset: firstSelectedVideoAsset)
         }else if let firstVideoAsset = boundAssets.first {
@@ -679,7 +674,7 @@ extension AWPhotosPickerViewController: PHPhotoLibraryChangeObserver {
             if changes.hasIncrementalChanges, self.configure.groupByFetch == nil {
                 var deletedSelectedAssets = false
                 var order = 0
-                #if swift(>=4.1)
+                
                 self.selectedAssets = self.selectedAssets.enumerated().compactMap({ (offset,asset) -> AWPHAsset? in
                     var asset = asset
                     if let phAsset = asset.phAsset, changes.fetchResultAfterChanges.contains(phAsset) {
@@ -690,18 +685,7 @@ extension AWPhotosPickerViewController: PHPhotoLibraryChangeObserver {
                     deletedSelectedAssets = true
                     return nil
                 })
-                #else
-                self.selectedAssets = self.selectedAssets.enumerated().flatMap({ (offset,asset) -> AWPHAsset? in
-                    var asset = asset
-                    if let phAsset = asset.phAsset, changes.fetchResultAfterChanges.contains(phAsset) {
-                        order += 1
-                        asset.selectedOrder = order
-                        return asset
-                    }
-                    deletedSelectedAssets = true
-                    return nil
-                })
-                #endif
+                
                 if deletedSelectedAssets {
                     self.focusedCollection?.fetchResult = changes.fetchResultAfterChanges
                     self.reloadCollectionView()
@@ -787,19 +771,13 @@ extension AWPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
             //deselect
             self.logDelegate?.deselectedPhoto(picker: self, at: indexPath.row)
             self.selectedAssets.remove(at: index)
-            #if swift(>=4.1)
+            
             self.selectedAssets = self.selectedAssets.enumerated().compactMap({ (offset,asset) -> AWPHAsset? in
                 var asset = asset
                 asset.selectedOrder = offset + 1
                 return asset
             })
-            #else
-            self.selectedAssets = self.selectedAssets.enumerated().flatMap({ (offset,asset) -> AWPHAsset? in
-                var asset = asset
-                asset.selectedOrder = offset + 1
-                return asset
-            })
-            #endif
+            
             cell.selectedAsset = false
             cell.stopPlay()
             self.orderUpdateCells()
