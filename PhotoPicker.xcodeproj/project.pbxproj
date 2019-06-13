@@ -12,6 +12,37 @@
 		AF48C39422B1FADD00F9D9E6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF48C39222B1FADD00F9D9E6 /* Main.storyboard */; };
 		AF48C39622B1FADF00F9D9E6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF48C39522B1FADF00F9D9E6 /* Assets.xcassets */; };
 		AF48C39922B1FADF00F9D9E6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AF48C39722B1FADF00F9D9E6 /* LaunchScreen.storyboard */; };
+		AF48C3A922B1FDDD00F9D9E6 /* SynchronizedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3A822B1FDDD00F9D9E6 /* SynchronizedDictionary.swift */; };
+		AF48C3AF22B1FE6C00F9D9E6 /* AWAlbumPopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3AE22B1FE6C00F9D9E6 /* AWAlbumPopView.swift */; };
+		AF48C3B222B1FEDC00F9D9E6 /* AWCollectionTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3B122B1FEDB00F9D9E6 /* AWCollectionTableViewCell.xib */; };
+		AF48C3B522B1FFF300F9D9E6 /* AWPhotosPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3B422B1FFF300F9D9E6 /* AWPhotosPickerViewController.xib */; };
+		AF48C3B722B1FFFE00F9D9E6 /* AWPhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3B622B1FFFE00F9D9E6 /* AWPhotoCollectionViewCell.xib */; };
+		AF48C3B922B2004400F9D9E6 /* AWAssetsCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3B822B2004400F9D9E6 /* AWAssetsCollection.swift */; };
+		AF48C3BB22B200CD00F9D9E6 /* AWPhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3BA22B200CD00F9D9E6 /* AWPhotoLibrary.swift */; };
+		AF48C3BD22B21D2100F9D9E6 /* AWAssetsCollection+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3BC22B21D2100F9D9E6 /* AWAssetsCollection+Extension.swift */; };
+		AF48C3C022B21D7A00F9D9E6 /* AWCollectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3BF22B21D7A00F9D9E6 /* AWCollectionTableViewCell.swift */; };
+		AF48C3C222B21E1B00F9D9E6 /* AWPhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3C122B21E1B00F9D9E6 /* AWPhotoCollectionViewCell.swift */; };
+		AF48C3C522B21EA100F9D9E6 /* AWPhotopickerDataSourcesProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3C422B21EA100F9D9E6 /* AWPhotopickerDataSourcesProtocol.swift */; };
+		AF48C3C722B21ED400F9D9E6 /* AWPhotosPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3C622B21ED400F9D9E6 /* AWPhotosPickerViewController.swift */; };
+		AF48C3C922B21F6500F9D9E6 /* AWBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3C822B21F6500F9D9E6 /* AWBundle.swift */; };
+		AF48C3CB22B21FA500F9D9E6 /* Icons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3CA22B21FA500F9D9E6 /* Icons.xcassets */; };
+		AF48C3D922B2237500F9D9E6 /* CustomFooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3CF22B2237400F9D9E6 /* CustomFooterView.xib */; };
+		AF48C3DA22B2237500F9D9E6 /* CustomHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3D022B2237500F9D9E6 /* CustomHeaderView.swift */; };
+		AF48C3DB22B2237500F9D9E6 /* CustomHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3D122B2237500F9D9E6 /* CustomHeaderView.xib */; };
+		AF48C3DC22B2237500F9D9E6 /* CustomCameraCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3D222B2237500F9D9E6 /* CustomCameraCell.xib */; };
+		AF48C3DD22B2237500F9D9E6 /* CustomFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3D322B2237500F9D9E6 /* CustomFooterView.swift */; };
+		AF48C3DE22B2237500F9D9E6 /* CustomCell_Instagram.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3D422B2237500F9D9E6 /* CustomCell_Instagram.xib */; };
+		AF48C3DF22B2237500F9D9E6 /* CustomCell_Instagram.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3D522B2237500F9D9E6 /* CustomCell_Instagram.swift */; };
+		AF48C3E022B2237500F9D9E6 /* AWPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3D622B2237500F9D9E6 /* AWPreviewView.swift */; };
+		AF48C3E122B2237500F9D9E6 /* CustomCameraCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3D722B2237500F9D9E6 /* CustomCameraCell.swift */; };
+		AF48C3E222B2237500F9D9E6 /* AWPhotoCaptureDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3D822B2237500F9D9E6 /* AWPhotoCaptureDelegate.swift */; };
+		AF48C3EA22B2238000F9D9E6 /* CustomBlackStylePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E322B2238000F9D9E6 /* CustomBlackStylePickerViewController.swift */; };
+		AF48C3EB22B2238000F9D9E6 /* CustomDataSources.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E422B2238000F9D9E6 /* CustomDataSources.swift */; };
+		AF48C3EC22B2238000F9D9E6 /* CustomPhotoPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E522B2238000F9D9E6 /* CustomPhotoPickerViewController.swift */; };
+		AF48C3ED22B2238000F9D9E6 /* PhotoPickerWithNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E622B2238000F9D9E6 /* PhotoPickerWithNavigationViewController.swift */; };
+		AF48C3EE22B2238000F9D9E6 /* ImagePreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3E722B2238000F9D9E6 /* ImagePreviewViewController.xib */; };
+		AF48C3EF22B2238000F9D9E6 /* AWPhotosPicker+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E822B2238000F9D9E6 /* AWPhotosPicker+Extension.swift */; };
+		AF48C3F022B2238000F9D9E6 /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E922B2238000F9D9E6 /* ImagePreviewViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +53,37 @@
 		AF48C39522B1FADF00F9D9E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF48C39822B1FADF00F9D9E6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AF48C39A22B1FADF00F9D9E6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AF48C3A822B1FDDD00F9D9E6 /* SynchronizedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedDictionary.swift; sourceTree = "<group>"; };
+		AF48C3AE22B1FE6C00F9D9E6 /* AWAlbumPopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWAlbumPopView.swift; sourceTree = "<group>"; };
+		AF48C3B122B1FEDB00F9D9E6 /* AWCollectionTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AWCollectionTableViewCell.xib; sourceTree = "<group>"; };
+		AF48C3B422B1FFF300F9D9E6 /* AWPhotosPickerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AWPhotosPickerViewController.xib; sourceTree = "<group>"; };
+		AF48C3B622B1FFFE00F9D9E6 /* AWPhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AWPhotoCollectionViewCell.xib; sourceTree = "<group>"; };
+		AF48C3B822B2004400F9D9E6 /* AWAssetsCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWAssetsCollection.swift; sourceTree = "<group>"; };
+		AF48C3BA22B200CD00F9D9E6 /* AWPhotoLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWPhotoLibrary.swift; sourceTree = "<group>"; };
+		AF48C3BC22B21D2100F9D9E6 /* AWAssetsCollection+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AWAssetsCollection+Extension.swift"; sourceTree = "<group>"; };
+		AF48C3BF22B21D7A00F9D9E6 /* AWCollectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWCollectionTableViewCell.swift; sourceTree = "<group>"; };
+		AF48C3C122B21E1B00F9D9E6 /* AWPhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWPhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		AF48C3C422B21EA100F9D9E6 /* AWPhotopickerDataSourcesProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWPhotopickerDataSourcesProtocol.swift; sourceTree = "<group>"; };
+		AF48C3C622B21ED400F9D9E6 /* AWPhotosPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWPhotosPickerViewController.swift; sourceTree = "<group>"; };
+		AF48C3C822B21F6500F9D9E6 /* AWBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWBundle.swift; sourceTree = "<group>"; };
+		AF48C3CA22B21FA500F9D9E6 /* Icons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Icons.xcassets; sourceTree = "<group>"; };
+		AF48C3CF22B2237400F9D9E6 /* CustomFooterView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomFooterView.xib; sourceTree = "<group>"; };
+		AF48C3D022B2237500F9D9E6 /* CustomHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomHeaderView.swift; sourceTree = "<group>"; };
+		AF48C3D122B2237500F9D9E6 /* CustomHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomHeaderView.xib; sourceTree = "<group>"; };
+		AF48C3D222B2237500F9D9E6 /* CustomCameraCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomCameraCell.xib; sourceTree = "<group>"; };
+		AF48C3D322B2237500F9D9E6 /* CustomFooterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomFooterView.swift; sourceTree = "<group>"; };
+		AF48C3D422B2237500F9D9E6 /* CustomCell_Instagram.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomCell_Instagram.xib; sourceTree = "<group>"; };
+		AF48C3D522B2237500F9D9E6 /* CustomCell_Instagram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell_Instagram.swift; sourceTree = "<group>"; };
+		AF48C3D622B2237500F9D9E6 /* AWPreviewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWPreviewView.swift; sourceTree = "<group>"; };
+		AF48C3D722B2237500F9D9E6 /* CustomCameraCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCameraCell.swift; sourceTree = "<group>"; };
+		AF48C3D822B2237500F9D9E6 /* AWPhotoCaptureDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AWPhotoCaptureDelegate.swift; sourceTree = "<group>"; };
+		AF48C3E322B2238000F9D9E6 /* CustomBlackStylePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomBlackStylePickerViewController.swift; sourceTree = "<group>"; };
+		AF48C3E422B2238000F9D9E6 /* CustomDataSources.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomDataSources.swift; sourceTree = "<group>"; };
+		AF48C3E522B2238000F9D9E6 /* CustomPhotoPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomPhotoPickerViewController.swift; sourceTree = "<group>"; };
+		AF48C3E622B2238000F9D9E6 /* PhotoPickerWithNavigationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoPickerWithNavigationViewController.swift; sourceTree = "<group>"; };
+		AF48C3E722B2238000F9D9E6 /* ImagePreviewViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImagePreviewViewController.xib; sourceTree = "<group>"; };
+		AF48C3E822B2238000F9D9E6 /* AWPhotosPicker+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AWPhotosPicker+Extension.swift"; sourceTree = "<group>"; };
+		AF48C3E922B2238000F9D9E6 /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +116,7 @@
 		AF48C38D22B1FADD00F9D9E6 /* PhotoPicker */ = {
 			isa = PBXGroup;
 			children = (
+				AF48C3A522B1FD8300F9D9E6 /* PhotoPicker */,
 				AF48C3A122B1FC1D00F9D9E6 /* MainFiles */,
 				AF48C3A022B1FC0500F9D9E6 /* Resource */,
 				AF48C3A422B1FCA200F9D9E6 /* UI */,
@@ -92,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				AF48C39522B1FADF00F9D9E6 /* Assets.xcassets */,
+				AF48C3CA22B21FA500F9D9E6 /* Icons.xcassets */,
 			);
 			path = ImagesAssets;
 			sourceTree = "<group>";
@@ -100,8 +164,150 @@
 			isa = PBXGroup;
 			children = (
 				AF48C39022B1FADD00F9D9E6 /* ViewController.swift */,
+				AF48C3CC22B222F100F9D9E6 /* Example */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		AF48C3A522B1FD8300F9D9E6 /* PhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3AA22B1FE1500F9D9E6 /* Core */,
+				AF48C3A622B1FDAD00F9D9E6 /* Helper */,
+				AF48C3A722B1FDCB00F9D9E6 /* Category */,
+			);
+			path = PhotoPicker;
+			sourceTree = "<group>";
+		};
+		AF48C3A622B1FDAD00F9D9E6 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3A822B1FDDD00F9D9E6 /* SynchronizedDictionary.swift */,
+				AF48C3C822B21F6500F9D9E6 /* AWBundle.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		AF48C3A722B1FDCB00F9D9E6 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3BC22B21D2100F9D9E6 /* AWAssetsCollection+Extension.swift */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		AF48C3AA22B1FE1500F9D9E6 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3C322B21E9700F9D9E6 /* Protocol */,
+				AF48C3AC22B1FE3D00F9D9E6 /* Class */,
+				AF48C3AB22B1FE3D00F9D9E6 /* ViewControllers */,
+				AF48C3AD22B1FE3D00F9D9E6 /* Views */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		AF48C3AB22B1FE3D00F9D9E6 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3C622B21ED400F9D9E6 /* AWPhotosPickerViewController.swift */,
+				AF48C3B322B1FFF300F9D9E6 /* Nib */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		AF48C3AC22B1FE3D00F9D9E6 /* Class */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3B822B2004400F9D9E6 /* AWAssetsCollection.swift */,
+				AF48C3BA22B200CD00F9D9E6 /* AWPhotoLibrary.swift */,
+			);
+			path = Class;
+			sourceTree = "<group>";
+		};
+		AF48C3AD22B1FE3D00F9D9E6 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3AE22B1FE6C00F9D9E6 /* AWAlbumPopView.swift */,
+				AF48C3B022B1FEC500F9D9E6 /* Cells */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AF48C3B022B1FEC500F9D9E6 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3BF22B21D7A00F9D9E6 /* AWCollectionTableViewCell.swift */,
+				AF48C3C122B21E1B00F9D9E6 /* AWPhotoCollectionViewCell.swift */,
+				AF48C3BE22B21D6500F9D9E6 /* Xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		AF48C3B322B1FFF300F9D9E6 /* Nib */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3B422B1FFF300F9D9E6 /* AWPhotosPickerViewController.xib */,
+			);
+			path = Nib;
+			sourceTree = "<group>";
+		};
+		AF48C3BE22B21D6500F9D9E6 /* Xib */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3B122B1FEDB00F9D9E6 /* AWCollectionTableViewCell.xib */,
+				AF48C3B622B1FFFE00F9D9E6 /* AWPhotoCollectionViewCell.xib */,
+			);
+			path = Xib;
+			sourceTree = "<group>";
+		};
+		AF48C3C322B21E9700F9D9E6 /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3C422B21EA100F9D9E6 /* AWPhotopickerDataSourcesProtocol.swift */,
+			);
+			name = Protocol;
+			path = PhotoPicker/PhotoPicker/Protocol;
+			sourceTree = SOURCE_ROOT;
+		};
+		AF48C3CC22B222F100F9D9E6 /* Example */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3CD22B222F100F9D9E6 /* CustomCells */,
+				AF48C3CE22B222F100F9D9E6 /* CustomPhotoPicker */,
+			);
+			path = Example;
+			sourceTree = "<group>";
+		};
+		AF48C3CD22B222F100F9D9E6 /* CustomCells */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3D722B2237500F9D9E6 /* CustomCameraCell.swift */,
+				AF48C3D222B2237500F9D9E6 /* CustomCameraCell.xib */,
+				AF48C3D522B2237500F9D9E6 /* CustomCell_Instagram.swift */,
+				AF48C3D422B2237500F9D9E6 /* CustomCell_Instagram.xib */,
+				AF48C3D322B2237500F9D9E6 /* CustomFooterView.swift */,
+				AF48C3CF22B2237400F9D9E6 /* CustomFooterView.xib */,
+				AF48C3D022B2237500F9D9E6 /* CustomHeaderView.swift */,
+				AF48C3D122B2237500F9D9E6 /* CustomHeaderView.xib */,
+				AF48C3D822B2237500F9D9E6 /* AWPhotoCaptureDelegate.swift */,
+				AF48C3D622B2237500F9D9E6 /* AWPreviewView.swift */,
+			);
+			path = CustomCells;
+			sourceTree = "<group>";
+		};
+		AF48C3CE22B222F100F9D9E6 /* CustomPhotoPicker */ = {
+			isa = PBXGroup;
+			children = (
+				AF48C3E822B2238000F9D9E6 /* AWPhotosPicker+Extension.swift */,
+				AF48C3E322B2238000F9D9E6 /* CustomBlackStylePickerViewController.swift */,
+				AF48C3E422B2238000F9D9E6 /* CustomDataSources.swift */,
+				AF48C3E522B2238000F9D9E6 /* CustomPhotoPickerViewController.swift */,
+				AF48C3E922B2238000F9D9E6 /* ImagePreviewViewController.swift */,
+				AF48C3E722B2238000F9D9E6 /* ImagePreviewViewController.xib */,
+				AF48C3E622B2238000F9D9E6 /* PhotoPickerWithNavigationViewController.swift */,
+			);
+			path = CustomPhotoPicker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,9 +368,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF48C3DE22B2237500F9D9E6 /* CustomCell_Instagram.xib in Resources */,
+				AF48C3B522B1FFF300F9D9E6 /* AWPhotosPickerViewController.xib in Resources */,
 				AF48C39922B1FADF00F9D9E6 /* LaunchScreen.storyboard in Resources */,
+				AF48C3D922B2237500F9D9E6 /* CustomFooterView.xib in Resources */,
+				AF48C3CB22B21FA500F9D9E6 /* Icons.xcassets in Resources */,
+				AF48C3DB22B2237500F9D9E6 /* CustomHeaderView.xib in Resources */,
+				AF48C3B222B1FEDC00F9D9E6 /* AWCollectionTableViewCell.xib in Resources */,
+				AF48C3B722B1FFFE00F9D9E6 /* AWPhotoCollectionViewCell.xib in Resources */,
 				AF48C39622B1FADF00F9D9E6 /* Assets.xcassets in Resources */,
 				AF48C39422B1FADD00F9D9E6 /* Main.storyboard in Resources */,
+				AF48C3DC22B2237500F9D9E6 /* CustomCameraCell.xib in Resources */,
+				AF48C3EE22B2238000F9D9E6 /* ImagePreviewViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,8 +390,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF48C3DD22B2237500F9D9E6 /* CustomFooterView.swift in Sources */,
 				AF48C39122B1FADD00F9D9E6 /* ViewController.swift in Sources */,
+				AF48C3C022B21D7A00F9D9E6 /* AWCollectionTableViewCell.swift in Sources */,
+				AF48C3E122B2237500F9D9E6 /* CustomCameraCell.swift in Sources */,
+				AF48C3EC22B2238000F9D9E6 /* CustomPhotoPickerViewController.swift in Sources */,
+				AF48C3EF22B2238000F9D9E6 /* AWPhotosPicker+Extension.swift in Sources */,
 				AF48C38F22B1FADD00F9D9E6 /* AppDelegate.swift in Sources */,
+				AF48C3C922B21F6500F9D9E6 /* AWBundle.swift in Sources */,
+				AF48C3E222B2237500F9D9E6 /* AWPhotoCaptureDelegate.swift in Sources */,
+				AF48C3C522B21EA100F9D9E6 /* AWPhotopickerDataSourcesProtocol.swift in Sources */,
+				AF48C3DF22B2237500F9D9E6 /* CustomCell_Instagram.swift in Sources */,
+				AF48C3C222B21E1B00F9D9E6 /* AWPhotoCollectionViewCell.swift in Sources */,
+				AF48C3ED22B2238000F9D9E6 /* PhotoPickerWithNavigationViewController.swift in Sources */,
+				AF48C3AF22B1FE6C00F9D9E6 /* AWAlbumPopView.swift in Sources */,
+				AF48C3EA22B2238000F9D9E6 /* CustomBlackStylePickerViewController.swift in Sources */,
+				AF48C3E022B2237500F9D9E6 /* AWPreviewView.swift in Sources */,
+				AF48C3C722B21ED400F9D9E6 /* AWPhotosPickerViewController.swift in Sources */,
+				AF48C3DA22B2237500F9D9E6 /* CustomHeaderView.swift in Sources */,
+				AF48C3EB22B2238000F9D9E6 /* CustomDataSources.swift in Sources */,
+				AF48C3B922B2004400F9D9E6 /* AWAssetsCollection.swift in Sources */,
+				AF48C3BB22B200CD00F9D9E6 /* AWPhotoLibrary.swift in Sources */,
+				AF48C3A922B1FDDD00F9D9E6 /* SynchronizedDictionary.swift in Sources */,
+				AF48C3F022B2238000F9D9E6 /* ImagePreviewViewController.swift in Sources */,
+				AF48C3BD22B21D2100F9D9E6 /* AWAssetsCollection+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
