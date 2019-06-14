@@ -81,6 +81,7 @@ public struct AWPhotosPickerConfigure {
     public var cameraCellNibSet: (nibName: String, bundle:Bundle)? = nil
     public var fetchCollectionTypes: [(PHAssetCollectionType,PHAssetCollectionSubtype)]? = nil
     public var groupByFetch: PHFetchedResultGroupedBy? = nil
+    public var supportedInterfaceOrientations: UIInterfaceOrientationMask = .portrait
     public init() {
         
     }
@@ -193,7 +194,7 @@ open class AWPhotosPickerViewController: UIViewController {
     }
     
     override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return UIInterfaceOrientationMask.portrait
+        return self.configure.supportedInterfaceOrientations
     }
     
     override open func didReceiveMemoryWarning() {
