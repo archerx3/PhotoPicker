@@ -43,6 +43,7 @@
 		AF48C3EE22B2238000F9D9E6 /* ImagePreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF48C3E722B2238000F9D9E6 /* ImagePreviewViewController.xib */; };
 		AF48C3EF22B2238000F9D9E6 /* AWPhotosPicker+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E822B2238000F9D9E6 /* AWPhotosPicker+Extension.swift */; };
 		AF48C3F022B2238000F9D9E6 /* ImagePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF48C3E922B2238000F9D9E6 /* ImagePreviewViewController.swift */; };
+		AFDF08B024EE22B70005D2FC /* AWAssetPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFDF08AF24EE22B70005D2FC /* AWAssetPreviewViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 		AF48C3E722B2238000F9D9E6 /* ImagePreviewViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImagePreviewViewController.xib; sourceTree = "<group>"; };
 		AF48C3E822B2238000F9D9E6 /* AWPhotosPicker+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AWPhotosPicker+Extension.swift"; sourceTree = "<group>"; };
 		AF48C3E922B2238000F9D9E6 /* ImagePreviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePreviewViewController.swift; sourceTree = "<group>"; };
+		AFDF08AF24EE22B70005D2FC /* AWAssetPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWAssetPreviewViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 			children = (
 				AF48C3C622B21ED400F9D9E6 /* AWPhotosPickerViewController.swift */,
 				AF48C3B322B1FFF300F9D9E6 /* Nib */,
+				AFDF08AF24EE22B70005D2FC /* AWAssetPreviewViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -412,6 +415,7 @@
 				AF48C3B922B2004400F9D9E6 /* AWAssetsCollection.swift in Sources */,
 				AF48C3BB22B200CD00F9D9E6 /* AWPhotoLibrary.swift in Sources */,
 				AF48C3A922B1FDDD00F9D9E6 /* SynchronizedDictionary.swift in Sources */,
+				AFDF08B024EE22B70005D2FC /* AWAssetPreviewViewController.swift in Sources */,
 				AF48C3F022B2238000F9D9E6 /* ImagePreviewViewController.swift in Sources */,
 				AF48C3BD22B21D2100F9D9E6 /* AWAssetsCollection+Extension.swift in Sources */,
 			);

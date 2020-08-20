@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import Photos
 
 protocol AWPhotoLibraryDelegate: class {
@@ -21,6 +22,8 @@ class AWPhotoLibrary {
     lazy var imageManager: PHCachingImageManager = {
         return PHCachingImageManager()
     }()
+    internal var assetCollections: [PHFetchResult<PHAssetCollection>] = []
+    internal var albums:  PHFetchResult<PHCollection>? = nil
     
     deinit {
         //        print("deinit AWPhotoLibrary")
@@ -131,9 +134,13 @@ extension PHFetchOptions {
 //MARK: - Load Collection
 extension AWPhotoLibrary {
     func getOption(configure: AWPhotosPickerConfigure) -> PHFetchOptions {
-        
-        let options = configure.fetchOption ?? PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        let options: PHFetchOptions
+        if let fetchOption = configure.fetchOption {
+            options = fetchOption
+        }else {
+            options = PHFetchOptions()
+            options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        }
         if let mediaType = configure.mediaType {
             let mediaPredicate = NSPredicate(format: "mediaType = %i", mediaType.rawValue)
             options.merge(predicate: mediaPredicate)
@@ -160,11 +167,18 @@ extension AWPhotoLibrary {
     }
     
     func fetchCollection(configure: AWPhotosPickerConfigure) {
+        self.albums = nil
+        self.assetCollections = []
         let useCameraButton = configure.usedCameraButton
         let options = getOption(configure: configure)
+        let fetchCollectionOption = configure.fetchCollectionOption
         
         func getAlbum(subType: PHAssetCollectionSubtype, result: inout [AWAssetsCollection]) {
-            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .album, subtype: subType, options: nil)
+            let collectionOption = fetchCollectionOption[.assetCollections(.album)]
+            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .album,
+                                                                          subtype: subType,
+                                                                          options: collectionOption)
+            self.assetCollections.append(fetchCollection)
             var collections = [PHAssetCollection]()
             fetchCollection.enumerateObjects { (collection, index, _) in
                 if configure.allowedAlbumCloudShared == false && collection.assetCollectionSubtype == .albumCloudShared {
@@ -175,6 +189,7 @@ extension AWPhotoLibrary {
             for collection in collections {
                 if !result.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
                     var assetsCollection = AWAssetsCollection(collection: collection)
+                    assetsCollection.title = configure.customLocalizedTitle[assetsCollection.title] ?? assetsCollection.title
                     assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                     if assetsCollection.count > 0 {
                         result.append(assetsCollection)
@@ -184,10 +199,22 @@ extension AWPhotoLibrary {
         }
         
         @discardableResult
-        func getSmartAlbum(subType: PHAssetCollectionSubtype, useCameraButton: Bool = false, result: inout [AWAssetsCollection]) -> AWAssetsCollection? {
-            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: subType, options: nil)
-            if let collection = fetchCollection.firstObject, !result.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
+        func getSmartAlbum(subType: PHAssetCollectionSubtype,
+                           useCameraButton: Bool = false,
+                           result: inout [AWAssetsCollection])
+            -> AWAssetsCollection?
+        {
+            let collectionOption = fetchCollectionOption[.assetCollections(.smartAlbum)]
+            let fetchCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum,
+                                                                          subtype: subType,
+                                                                          options: collectionOption)
+            self.assetCollections.append(fetchCollection)
+            if
+                let collection = fetchCollection.firstObject,
+                result.contains(where: { $0.localIdentifier == collection.localIdentifier }) == false
+            {
                 var assetsCollection = AWAssetsCollection(collection: collection)
+                assetsCollection.title = configure.customLocalizedTitle[assetsCollection.title] ?? assetsCollection.title
                 assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                 if assetsCollection.count > 0 || useCameraButton {
                     result.append(assetsCollection)
@@ -196,7 +223,7 @@ extension AWPhotoLibrary {
             }
             return nil
         }
-        if let fetchCollectionTypes: [(PHAssetCollectionType,PHAssetCollectionSubtype)] = configure.fetchCollectionTypes {
+        if let fetchCollectionTypes = configure.fetchCollectionTypes {
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 var assetCollections = [AWAssetsCollection]()
                 for (type,subType) in fetchCollectionTypes {
@@ -213,9 +240,15 @@ extension AWPhotoLibrary {
         }else {
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
                 var assetCollections = [AWAssetsCollection]()
+                //Screenshots
+                getSmartAlbum(subType: .smartAlbumScreenshots, result: &assetCollections)
+                
                 //Camera Roll
-                let camerarollCollection = getSmartAlbum(subType: .smartAlbumUserLibrary, useCameraButton: useCameraButton, result: &assetCollections)
+                let camerarollCollection = getSmartAlbum(subType: .smartAlbumUserLibrary,
+                                                         useCameraButton: useCameraButton,
+                                                         result: &assetCollections)
                 if var cameraRoll = camerarollCollection {
+                    cameraRoll.title = configure.customLocalizedTitle[cameraRoll.title] ?? cameraRoll.title
                     cameraRoll.useCameraButton = useCameraButton
                     assetCollections[0] = cameraRoll
                     DispatchQueue.main.async {
@@ -237,10 +270,13 @@ extension AWPhotoLibrary {
                     getSmartAlbum(subType: .smartAlbumVideos, result: &assetCollections)
                 }
                 //Album
-                let albumsResult = PHCollectionList.fetchTopLevelUserCollections(with: nil)
+                let collectionOption = fetchCollectionOption[.topLevelUserCollections]
+                let albumsResult = PHCollectionList.fetchTopLevelUserCollections(with: collectionOption)
+                self?.albums = albumsResult
                 albumsResult.enumerateObjects({ (collection, index, stop) -> Void in
                     guard let collection = collection as? PHAssetCollection else { return }
                     var assetsCollection = AWAssetsCollection(collection: collection)
+                    assetsCollection.title = configure.customLocalizedTitle[assetsCollection.title] ?? assetsCollection.title
                     assetsCollection.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
                     if assetsCollection.count > 0, !assetCollections.contains(where: { $0.localIdentifier == collection.localIdentifier }) {
                         assetCollections.append(assetsCollection)

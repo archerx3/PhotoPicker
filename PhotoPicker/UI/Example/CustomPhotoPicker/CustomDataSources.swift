@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import Photos
 
 struct CustomDataSources: AWPhotopickerDataSourcesProtocol {

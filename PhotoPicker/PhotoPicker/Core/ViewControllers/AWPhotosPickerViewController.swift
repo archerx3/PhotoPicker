@@ -14,6 +14,7 @@ import MobileCoreServices
 public protocol AWPhotosPickerViewControllerDelegate: class {
     func dismissPhotoPicker(withPHAssets: [PHAsset])
     func dismissPhotoPicker(withAWPHAssets: [AWPHAsset])
+    func shouldDismissPhotoPicker(withAWPHAssets: [AWPHAsset]) -> Bool
     func dismissComplete()
     func photoPickerDidCancel()
     func canSelectAsset(phAsset: PHAsset) -> Bool
@@ -26,6 +27,7 @@ extension AWPhotosPickerViewControllerDelegate {
     public func deninedAuthoization() { }
     public func dismissPhotoPicker(withPHAssets: [PHAsset]) { }
     public func dismissPhotoPicker(withAWPHAssets: [AWPHAsset]) { }
+    public func shouldDismissPhotoPicker(withAWPHAssets: [AWPHAsset]) -> Bool { return true }
     public func dismissComplete() { }
     public func photoPickerDidCancel() { }
     public func canSelectAsset(phAsset: PHAsset) -> Bool { return true }
@@ -51,17 +53,22 @@ extension AWPhotosPickerLogDelegate {
 
 
 public struct AWPhotosPickerConfigure {
-    public var defaultCameraRollTitle = "Camera Roll"
+    public var customLocalizedTitle: [String: String] = ["Camera Roll": "Camera Roll"]
     public var tapHereToChange = "Tap here to change"
     public var cancelTitle = "Cancel"
     public var doneTitle = "Done"
     public var emptyMessage = "No albums"
+    public var selectMessage = "Select"
+    public var deselectMessage = "Deselect"
     public var emptyImage: UIImage? = nil
     public var usedCameraButton = true
     public var usedPrefetch = false
+    public var previewAtForceTouch = false
+    public var startplayBack: PHLivePhotoViewPlaybackStyle = .hint
     public var allowedLivePhotos = true
     public var allowedVideo = true
     public var allowedAlbumCloudShared = false
+    public var allowedPhotograph = true
     public var allowedVideoRecording = true
     public var recordingVideoQuality: UIImagePickerController.QualityType = .typeMedium
     public var maxVideoDuration:TimeInterval? = nil
@@ -72,6 +79,7 @@ public struct AWPhotosPickerConfigure {
     public var singleSelectedMode = false
     public var maxSelectedAssets: Int? = nil
     public var fetchOption: PHFetchOptions? = nil
+    public var fetchCollectionOption: [FetchCollectionType: PHFetchOptions] = [:]
     public var selectedColor = UIColor(red: 88/255, green: 144/255, blue: 255/255, alpha: 1.0)
     public var cameraBgColor = UIColor(red: 221/255, green: 223/255, blue: 226/255, alpha: 1)
     public var cameraIcon = UIImage(named: "Icon-Camera")
@@ -82,20 +90,41 @@ public struct AWPhotosPickerConfigure {
     public var fetchCollectionTypes: [(PHAssetCollectionType,PHAssetCollectionSubtype)]? = nil
     public var groupByFetch: PHFetchedResultGroupedBy? = nil
     public var supportedInterfaceOrientations: UIInterfaceOrientationMask = .portrait
+    public var popup: [PopupConfigure] = []
     public init() {
         
     }
 }
 
+public enum FetchCollectionType {
+    case assetCollections(PHAssetCollectionType)
+    case topLevelUserCollections
+}
+
+extension FetchCollectionType: Hashable {
+    private var identifier: String {
+        switch self {
+        case let .assetCollections(collectionType):
+            return "assetCollections\(collectionType.rawValue)"
+        case .topLevelUserCollections:
+            return "topLevelUserCollections"
+        }
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.identifier)
+    }
+}
+
+public enum PopupConfigure {
+    case animation(TimeInterval)
+}
 
 public struct Platform {
-    
     public static var isSimulator: Bool {
         return TARGET_OS_SIMULATOR != 0 // Use this line in Xcode 7 or newer
     }
-    
 }
-
 
 open class AWPhotosPickerViewController: UIViewController {
     @IBOutlet open var navigationBar: UINavigationBar!
@@ -123,14 +152,13 @@ open class AWPhotosPickerViewController: UIViewController {
     public var customDataSouces: AWPhotopickerDataSourcesProtocol? = nil
     
     private var usedCameraButton: Bool {
-        get {
-            return self.configure.usedCameraButton
-        }
+        return self.configure.usedCameraButton
+    }
+    private var previewAtForceTouch: Bool {
+        return self.configure.previewAtForceTouch
     }
     private var allowedVideo: Bool {
-        get {
-            return self.configure.allowedVideo
-        }
+        return self.configure.allowedVideo
     }
     private var usedPrefetch: Bool {
         get {
@@ -197,6 +225,28 @@ open class AWPhotosPickerViewController: UIViewController {
         return self.configure.supportedInterfaceOrientations
     }
     
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.forceTouchCapability == .available && self.previewAtForceTouch {
+            registerForPreviewing(with: self, sourceView: collectionView)
+        }
+        
+        if #available(iOS 13.0, *) {
+            let userInterfaceStyle = self.traitCollection.userInterfaceStyle
+            let image = UIImage(named: "Icon-Pop-Arrow")
+            if userInterfaceStyle.rawValue == 2 {
+                self.popArrowImageView.image = image?.colorMask(color: .systemBackground)
+                self.view.backgroundColor = .black
+                self.collectionView.backgroundColor = .black
+            }else {
+                self.popArrowImageView.image = image?.colorMask(color: .white)
+                self.view.backgroundColor = .white
+                self.collectionView.backgroundColor = .white
+            }
+        }
+    }
+    
     override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         self.stopPlay()
@@ -213,6 +263,7 @@ open class AWPhotosPickerViewController: UIViewController {
                     self?.handleDeniedAlbumsAuthorization()
                 }
             }
+        case .limited: fallthrough  // TODO:
         case .authorized:
             self.initPhotoLibrary()
         case .restricted: fallthrough
@@ -247,11 +298,36 @@ open class AWPhotosPickerViewController: UIViewController {
         }
     }
     
-    open func maxCheck() -> Bool {
-        if self.configure.singleSelectedMode {
-            self.selectedAssets.removeAll()
-            self.orderUpdateCells()
+    private func findIndexAndReloadCells(phAsset: PHAsset) {
+        if
+            self.configure.groupByFetch != nil,
+            let indexPath = self.focusedCollection?.findIndex(phAsset: phAsset)
+        {
+            self.collectionView.reloadItems(at: [indexPath])
+            return
         }
+        if
+            var index = self.focusedCollection?.fetchResult?.index(of: phAsset),
+            let focused = self.focusedCollection,
+            index != NSNotFound
+        {
+            index += (focused.useCameraButton) ? 1 : 0
+            self.collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
+        }
+    }
+    
+    open func deselectWhenUsingSingleSelectedMode() {
+        if
+            self.configure.singleSelectedMode == true,
+            let selectedPHAsset = self.selectedAssets.first?.phAsset
+        {
+            self.selectedAssets.removeAll()
+            findIndexAndReloadCells(phAsset: selectedPHAsset)
+        }
+    }
+    
+    open func maxCheck() -> Bool {
+        deselectWhenUsingSingleSelectedMode()
         if let max = self.configure.maxSelectedAssets, max <= self.selectedAssets.count {
             self.delegate?.didExceedMaximumNumberOfSelection(picker: self)
             self.didExceedMaximumNumberOfSelection?(self)
@@ -303,7 +379,7 @@ extension AWPhotosPickerViewController {
         self.indicator.startAnimating()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(titleTap))
         self.titleView.addGestureRecognizer(tapGesture)
-        self.titleLabel.text = self.configure.defaultCameraRollTitle
+        self.titleLabel.text = self.configure.customLocalizedTitle["Camera Roll"]
         self.subTitleLabel.text = self.configure.tapHereToChange
         self.cancelButton.title = self.configure.cancelTitle
         self.doneButton.title = self.configure.doneTitle
@@ -398,7 +474,7 @@ extension AWPhotosPickerViewController {
         self.focusedCollection?.fetchResult = self.photoLibrary.fetchResult(collection: collection, configure: self.configure)
         reloadIndexPaths.append(IndexPath(row: getfocusedIndex(), section: 0))
         self.albumPopView.tableView.reloadRows(at: reloadIndexPaths, with: .none)
-        self.albumPopView.show(false, duration: 0.2)
+        self.albumPopView.show(false, duration: self.configure.popup.duration)
         self.updateTitle()
         self.reloadCollectionView()
         self.collectionView.contentOffset = collection.recentPosition
@@ -414,7 +490,7 @@ extension AWPhotosPickerViewController {
     // User Action
     @objc func titleTap() {
         guard collections.count > 0 else { return }
-        self.albumPopView.show(self.albumPopView.isHidden)
+        self.albumPopView.show(self.albumPopView.isHidden, duration: self.configure.popup.duration)
     }
     
     @IBAction open func cancelButtonTap() {
@@ -428,20 +504,31 @@ extension AWPhotosPickerViewController {
     }
     
     private func dismiss(done: Bool) {
+        var shouldDismiss = true
         if done {
+            #if swift(>=4.1)
             self.delegate?.dismissPhotoPicker(withPHAssets: self.selectedAssets.compactMap{ $0.phAsset })
-            
+            #else
+            self.delegate?.dismissPhotoPicker(withPHAssets: self.selectedAssets.flatMap{ $0.phAsset })
+            #endif
             self.delegate?.dismissPhotoPicker(withAWPHAssets: self.selectedAssets)
+            shouldDismiss = self.delegate?.shouldDismissPhotoPicker(withAWPHAssets: self.selectedAssets) ?? true
             self.completionWithAWPHAssets?(self.selectedAssets)
             
+            #if swift(>=4.1)
             self.completionWithPHAssets?(self.selectedAssets.compactMap{ $0.phAsset })
+            #else
+            self.completionWithPHAssets?(self.selectedAssets.flatMap{ $0.phAsset })
+            #endif
         }else {
             self.delegate?.photoPickerDidCancel()
             self.didCancel?()
         }
-        self.dismiss(animated: true) { [weak self] in
-            self?.delegate?.dismissComplete()
-            self?.dismissCompletion?()
+        if shouldDismiss {
+            self.dismiss(animated: true) { [weak self] in
+                self?.delegate?.dismissComplete()
+                self?.dismissCompletion?()
+            }
         }
     }
     
@@ -513,14 +600,21 @@ extension AWPhotosPickerViewController: UIImagePickerControllerDelegate, UINavig
         guard !maxCheck() else { return }
         let picker = UIImagePickerController()
         picker.sourceType = .camera
-        picker.mediaTypes = [kUTTypeImage as String]
+        var mediaTypes: [String] = []
+        if self.configure.allowedPhotograph {
+            mediaTypes.append(kUTTypeImage as String)
+        }
         if self.configure.allowedVideoRecording {
-            picker.mediaTypes.append(kUTTypeMovie as String)
+            mediaTypes.append(kUTTypeMovie as String)
             picker.videoQuality = self.configure.recordingVideoQuality
             if let duration = self.configure.maxVideoDuration {
                 picker.videoMaximumDuration = duration
             }
         }
+        guard mediaTypes.count > 0 else {
+            return
+        }
+        picker.mediaTypes = mediaTypes
         picker.allowsEditing = false
         picker.delegate = self
         self.present(picker, animated: true, completion: nil)
@@ -546,8 +640,9 @@ extension AWPhotosPickerViewController: UIImagePickerControllerDelegate, UINavig
             PHPhotoLibrary.shared().performChanges({
                 let newAssetRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
                 placeholderAsset = newAssetRequest.placeholderForCreatedAsset
-            }, completionHandler: { [weak self] (sucess, error) in
-                if sucess, let `self` = self, let identifier = placeholderAsset?.localIdentifier {
+            }, completionHandler: { [weak self] (success, error) in
+                guard self?.maxCheck() == false else { return }
+                if success, let `self` = self, let identifier = placeholderAsset?.localIdentifier {
                     guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else { return }
                     var result = AWPHAsset(asset: asset)
                     result.selectedOrder = self.selectedAssets.count + 1
@@ -562,8 +657,9 @@ extension AWPhotosPickerViewController: UIImagePickerControllerDelegate, UINavig
             PHPhotoLibrary.shared().performChanges({
                 let newAssetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: info[.mediaURL] as! URL)
                 placeholderAsset = newAssetRequest?.placeholderForCreatedAsset
-            }) { [weak self] (sucess, error) in
-                if sucess, let `self` = self, let identifier = placeholderAsset?.localIdentifier {
+            }) { [weak self] (success, error) in
+                guard self?.maxCheck() == false else { return }
+                if success, let `self` = self, let identifier = placeholderAsset?.localIdentifier {
                     guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else { return }
                     var result = AWPHAsset(asset: asset)
                     result.selectedOrder = self.selectedAssets.count + 1
@@ -591,7 +687,7 @@ extension AWPhotosPickerViewController {
     }
     
     private func videoCheck() {
-        func play(asset: (IndexPath,AWPHAsset)) {
+        func play(asset: (IndexPath, AWPHAsset)) {
             if self.playRequestID?.indexPath != asset.0 {
                 playVideo(asset: asset.1, indexPath: asset.0)
             }
@@ -599,12 +695,17 @@ extension AWPhotosPickerViewController {
         guard self.configure.autoPlay else { return }
         guard self.playRequestID == nil else { return }
         let visibleIndexPaths = self.collectionView.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row })
-        
+        #if swift(>=4.1)
         let boundAssets = visibleIndexPaths.compactMap{ indexPath -> (IndexPath,AWPHAsset)? in
             guard let asset = self.focusedCollection?.getAWAsset(at: indexPath), asset.phAsset?.mediaType == .video else { return nil }
             return (indexPath,asset)
         }
-        
+        #else
+        let boundAssets = visibleIndexPaths.flatMap{ indexPath -> (IndexPath,AWPHAsset)? in
+            guard let asset = self.focusedCollection?.getAWAsset(at: indexPath.row),asset.phAsset?.mediaType == .video else { return nil }
+            return (indexPath,asset)
+        }
+        #endif
         if let firstSelectedVideoAsset = (boundAssets.filter{ getSelectedAssets($0.1) != nil }.first) {
             play(asset: firstSelectedVideoAsset)
         }else if let firstVideoAsset = boundAssets.first {
@@ -628,7 +729,7 @@ extension AWPhotosPickerViewController: PHLivePhotoViewDelegate {
         if asset.type == .video {
             guard let cell = self.collectionView.cellForItem(at: indexPath) as? AWPhotoCollectionViewCell else { return }
             let requestID = self.photoLibrary.videoAsset(asset: phAsset, completionBlock: { (playerItem, info) in
-                DispatchQueue.main.sync { [weak self, weak cell] in
+                DispatchQueue.main.async { [weak self, weak cell] in
                     guard let `self` = self, let cell = cell, cell.player == nil else { return }
                     let player = AVPlayer(playerItem: playerItem)
                     cell.player = player
@@ -645,7 +746,7 @@ extension AWPhotosPickerViewController: PHLivePhotoViewDelegate {
                 cell?.livePhotoView?.isHidden = false
                 cell?.livePhotoView?.livePhoto = livePhoto
                 cell?.livePhotoView?.isMuted = true
-                cell?.livePhotoView?.startPlayback(with: .hint)
+                cell?.livePhotoView?.startPlayback(with: self.configure.startplayBack)
             })
             if requestID > 0 {
                 self.playRequestID = (indexPath,requestID)
@@ -664,18 +765,61 @@ extension AWPhotosPickerViewController: PHLivePhotoViewDelegate {
 
 // MARK: - PHPhotoLibraryChangeObserver
 extension AWPhotosPickerViewController: PHPhotoLibraryChangeObserver {
-    public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        guard getfocusedIndex() == 0 else {
-            return
+    private func getChanges(_ changeInstance: PHChange) -> PHFetchResultChangeDetails<PHAsset>? {
+        func isChangesCount<T>(changeDetails: PHFetchResultChangeDetails<T>?) -> Bool {
+            guard let changeDetails = changeDetails else {
+                return false
+            }
+            let before = changeDetails.fetchResultBeforeChanges.count
+            let after = changeDetails.fetchResultAfterChanges.count
+            return before != after
         }
-        let addIndex = self.usedCameraButton ? 1 : 0
-        DispatchQueue.main.sync {
-            guard let changeFetchResult = self.focusedCollection?.fetchResult else { return }
-            guard let changes = changeInstance.changeDetails(for: changeFetchResult) else { return }
+        
+        func isAlbumsChanges() -> Bool {
+            guard let albums = self.photoLibrary.albums else {
+                return false
+            }
+            let changeDetails = changeInstance.changeDetails(for: albums)
+            return isChangesCount(changeDetails: changeDetails)
+        }
+        
+        func isCollectionsChanges() -> Bool {
+            for fetchResultCollection in self.photoLibrary.assetCollections {
+                let changeDetails = changeInstance.changeDetails(for: fetchResultCollection)
+                if isChangesCount(changeDetails: changeDetails) == true {
+                    return true
+                }
+            }
+            return false
+        }
+        
+        if isAlbumsChanges() || isCollectionsChanges() {
+            DispatchQueue.main.async {
+                self.albumPopView.show(false, duration: self.configure.popup.duration)
+                self.photoLibrary.fetchCollection(configure: self.configure)
+            }
+            return nil
+        }else {
+            guard let changeFetchResult = self.focusedCollection?.fetchResult else { return nil }
+            guard let changes = changeInstance.changeDetails(for: changeFetchResult) else { return nil }
+            return changes
+        }
+    }
+    
+    public func photoLibraryDidChange(_ changeInstance: PHChange) {
+        var addIndex = 0
+        if getfocusedIndex() == 0 {
+            addIndex = self.usedCameraButton ? 1 : 0
+        }
+        DispatchQueue.main.async {
+            guard let changes = self.getChanges(changeInstance) else {
+                return
+            }
+            
             if changes.hasIncrementalChanges, self.configure.groupByFetch == nil {
                 var deletedSelectedAssets = false
                 var order = 0
-                
+                #if swift(>=4.1)
                 self.selectedAssets = self.selectedAssets.enumerated().compactMap({ (offset,asset) -> AWPHAsset? in
                     var asset = asset
                     if let phAsset = asset.phAsset, changes.fetchResultAfterChanges.contains(phAsset) {
@@ -686,7 +830,18 @@ extension AWPhotosPickerViewController: PHPhotoLibraryChangeObserver {
                     deletedSelectedAssets = true
                     return nil
                 })
-                
+                #else
+                self.selectedAssets = self.selectedAssets.enumerated().flatMap({ (offset,asset) -> AWPHAsset? in
+                    var asset = asset
+                    if let phAsset = asset.phAsset, changes.fetchResultAfterChanges.contains(phAsset) {
+                        order += 1
+                        asset.selectedOrder = order
+                        return asset
+                    }
+                    deletedSelectedAssets = true
+                    return nil
+                })
+                #endif
                 if deletedSelectedAssets {
                     self.focusedCollection?.fetchResult = changes.fetchResultAfterChanges
                     self.reloadCollectionView()
@@ -704,13 +859,13 @@ extension AWPhotosPickerViewController: PHPhotoLibraryChangeObserver {
                             self.collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
                                                          to: IndexPath(item: toIndex, section: 0))
                         }
-                        }, completion: { [weak self] (completed) in
-                            guard let `self` = self else { return }
-                            if completed {
-                                if let changed = changes.changedIndexes, changed.count > 0 {
-                                    self.collectionView.reloadItems(at: changed.map { IndexPath(item: $0+addIndex, section:0) })
-                                }
+                    }, completion: { [weak self] (completed) in
+                        guard let `self` = self else { return }
+                        if completed {
+                            if let changed = changes.changedIndexes, changed.count > 0 {
+                                self.collectionView.reloadItems(at: changed.map { IndexPath(item: $0+addIndex, section:0) })
                             }
+                        }
                     })
                 }
             }else {
@@ -718,8 +873,8 @@ extension AWPhotosPickerViewController: PHPhotoLibraryChangeObserver {
                 self.reloadCollectionView()
             }
             if let collection = self.focusedCollection {
-                self.collections[getfocusedIndex()] = collection
-                self.albumPopView.tableView.reloadRows(at: [IndexPath(row: getfocusedIndex(), section: 0)], with: .none)
+                self.collections[self.getfocusedIndex()] = collection
+                self.albumPopView.tableView.reloadRows(at: [IndexPath(row: self.getfocusedIndex(), section: 0)], with: .none)
             }
         }
     }
@@ -751,53 +906,15 @@ extension AWPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
     //Delegate
     open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let collection = self.focusedCollection, let cell = self.collectionView.cellForItem(at: indexPath) as? AWPhotoCollectionViewCell else { return }
+        
         let isCameraRow = collection.useCameraButton && indexPath.section == 0 && indexPath.row == 0
+        
         if isCameraRow {
-            if Platform.isSimulator {
-                print("not supported by the simulator.")
-                return
-            }else {
-                if self.configure.cameraCellNibSet?.nibName != nil {
-                    cell.selectedCell()
-                }else {
-                    showCameraIfAuthorized()
-                }
-                self.logDelegate?.selectedCameraCell(picker: self)
-                return
-            }
+            selectCameraCell(cell)
+            return
         }
-        guard var asset = collection.getAWAsset(at: indexPath), let phAsset = asset.phAsset else { return }
-        cell.popScaleAnim()
-        if let index = self.selectedAssets.firstIndex(where: { $0.phAsset == asset.phAsset }) {
-            //deselect
-            self.logDelegate?.deselectedPhoto(picker: self, at: indexPath.row)
-            self.selectedAssets.remove(at: index)
-            
-            self.selectedAssets = self.selectedAssets.enumerated().compactMap({ (offset,asset) -> AWPHAsset? in
-                var asset = asset
-                asset.selectedOrder = offset + 1
-                return asset
-            })
-            
-            cell.selectedAsset = false
-            cell.stopPlay()
-            self.orderUpdateCells()
-            if self.playRequestID?.indexPath == indexPath {
-                stopPlay()
-            }
-        }else {
-            //select
-            self.logDelegate?.selectedPhoto(picker: self, at: indexPath.row)
-            guard !maxCheck() else { return }
-            guard canSelect(phAsset: phAsset) else { return }
-            asset.selectedOrder = self.selectedAssets.count + 1
-            self.selectedAssets.append(asset)
-            cell.selectedAsset = true
-            cell.orderLabel?.text = "\(asset.selectedOrder)"
-            if asset.type != .photo, self.configure.autoPlay {
-                playVideo(asset: asset, indexPath: indexPath)
-            }
-        }
+        
+        toggleSelection(for: cell, at: indexPath)
     }
     
     open func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -835,6 +952,9 @@ extension AWPhotosPickerViewController: UICollectionViewDelegate,UICollectionVie
             return cell
         }
         guard let asset = collection.getAWAsset(at: indexPath) else { return cell }
+        
+        cell.asset = asset.phAsset
+        
         if let selectedAsset = getSelectedAssets(asset) {
             cell.selectedAsset = true
             cell.orderLabel?.text = "\(selectedAsset.selectedOrder)"
@@ -1037,5 +1157,135 @@ extension AWPhotosPickerViewController: UITableViewDelegate,UITableViewDataSourc
         cell.accessoryType = getfocusedIndex() == indexPath.row ? .checkmark : .none
         cell.selectionStyle = .none
         return cell
+    }
+}
+
+// MARK: - UIViewControllerPreviewingDelegate
+extension AWPhotosPickerViewController: UIViewControllerPreviewingDelegate {
+    public func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        guard self.previewAtForceTouch == true else { return nil }
+        guard let pressingIndexPath = collectionView.indexPathForItem(at: location) else { return nil }
+        guard let pressingCell = collectionView.cellForItem(at: pressingIndexPath) as? AWPhotoCollectionViewCell else { return nil }
+    
+        previewingContext.sourceRect = pressingCell.frame
+        let previewController = AWAssetPreviewViewController()
+        previewController.asset = pressingCell.asset
+        
+        return previewController
+    }
+    
+    public func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {}
+    
+    @available(iOS 13.0, *)
+    public func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard self.previewAtForceTouch == true else { return nil }
+        guard let cell = collectionView.cellForItem(at: indexPath) as? AWPhotoCollectionViewCell else { return nil }
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: {
+                let previewController = AWAssetPreviewViewController()
+                previewController.asset = cell.asset
+                return previewController
+            
+            }, actionProvider: { [weak self] suggestedActions in
+                guard let self = self else { return nil }
+                let isSelected = cell.selectedAsset
+                let title = isSelected ? self.configure.deselectMessage : self.configure.selectMessage
+                let imageName = isSelected ? "checkmark.circle" : "circle"
+                let toggleSelection = UIAction(title: title, image: UIImage(systemName: imageName)) { [weak self] action in
+                    self?.toggleSelection(for: cell, at: indexPath)
+                }
+
+                return UIMenu(title: "", children: [toggleSelection])
+            }
+        )
+    }
+}
+
+extension AWPhotosPickerViewController {
+    func selectCameraCell(_ cell: AWPhotoCollectionViewCell) {
+        if Platform.isSimulator {
+            print("not supported by the simulator.")
+        } else {
+            if configure.cameraCellNibSet?.nibName != nil {
+                cell.selectedCell()
+            } else {
+                showCameraIfAuthorized()
+            }
+            logDelegate?.selectedCameraCell(picker: self)
+        }
+    }
+    
+    func toggleSelection(for cell: AWPhotoCollectionViewCell, at indexPath: IndexPath) {
+        guard let collection = focusedCollection, var asset = collection.getAWAsset(at: indexPath), let phAsset = asset.phAsset else { return }
+        
+        cell.popScaleAnim()
+        
+        if let index = selectedAssets.firstIndex(where: { $0.phAsset == asset.phAsset }) {
+        //deselect
+            logDelegate?.deselectedPhoto(picker: self, at: indexPath.row)
+            selectedAssets.remove(at: index)
+            #if swift(>=4.1)
+            selectedAssets = selectedAssets.enumerated().compactMap({ (offset,asset) -> AWPHAsset? in
+                var asset = asset
+                asset.selectedOrder = offset + 1
+                return asset
+            })
+            #else
+            selectedAssets = selectedAssets.enumerated().flatMap({ (offset,asset) -> AWPHAsset? in
+                var asset = asset
+                asset.selectedOrder = offset + 1
+                return asset
+            })
+            #endif
+            cell.selectedAsset = false
+            cell.stopPlay()
+            orderUpdateCells()
+            if playRequestID?.indexPath == indexPath {
+                stopPlay()
+            }
+        } else {
+        //select
+            logDelegate?.selectedPhoto(picker: self, at: indexPath.row)
+            guard !maxCheck(), canSelect(phAsset: phAsset) else { return }
+            
+            asset.selectedOrder = selectedAssets.count + 1
+            selectedAssets.append(asset)
+            cell.selectedAsset = true
+            cell.orderLabel?.text = "\(asset.selectedOrder)"
+            
+            if asset.type != .photo, configure.autoPlay {
+                playVideo(asset: asset, indexPath: indexPath)
+            }
+        }
+
+    }
+}
+
+extension Array where Element == PopupConfigure {
+    var duration: TimeInterval {
+        var result: TimeInterval = 0.1
+        forEach {
+            if case let .animation(duration) = $0 {
+                result = duration
+            }
+        }
+        return result
+    }
+}
+
+extension UIImage {
+    public func colorMask(color:UIColor) -> UIImage {
+        var result: UIImage?
+        let rect = CGRect(x:0, y:0, width:size.width, height:size.height)
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, scale)
+        if let c = UIGraphicsGetCurrentContext() {
+            self.draw(in: rect)
+            c.setFillColor(color.cgColor)
+            c.setBlendMode(.sourceAtop)
+            c.fill(rect)
+            result = UIGraphicsGetImageFromCurrentImageContext()
+        }
+        UIGraphicsEndImageContext()
+        return result ?? self
     }
 }

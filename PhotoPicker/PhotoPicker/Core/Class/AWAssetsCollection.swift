@@ -339,6 +339,18 @@ public struct AWAssetsCollection {
         }
     }
     
+    func findIndex(phAsset: PHAsset) -> IndexPath? {
+        guard let sections = self.sections else {
+            return nil
+        }
+        for (offset, section) in sections.enumerated() {
+            if let index = section.assets.firstIndex(where: { $0.phAsset == phAsset }) {
+                return IndexPath(row: index, section: offset)
+            }
+        }
+        return nil
+    }
+    
     mutating func reloadSection(groupedBy: PHFetchedResultGroupedBy) {
         var groupedSections = self.section(groupedBy: groupedBy)
         if self.useCameraButton {

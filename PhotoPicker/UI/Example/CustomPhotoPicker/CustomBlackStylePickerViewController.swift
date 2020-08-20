@@ -9,23 +9,6 @@
 import Foundation
 import UIKit
 
-extension UIImage {
-    public func colorMask(color:UIColor) -> UIImage {
-        var result: UIImage?
-        let rect = CGRect(x:0, y:0, width:size.width, height:size.height)
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, scale)
-        if let c = UIGraphicsGetCurrentContext() {
-            self.draw(in: rect)
-            c.setFillColor(color.cgColor)
-            c.setBlendMode(.sourceAtop)
-            c.fill(rect)
-            result = UIGraphicsGetImageFromCurrentImageContext()
-        }
-        UIGraphicsEndImageContext()
-        return result ?? self
-    }
-}
-
 class CustomBlackStylePickerViewController: AWPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
